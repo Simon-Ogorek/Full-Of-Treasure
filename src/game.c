@@ -3,6 +3,7 @@
 
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
+#include "gf2d_entity.h"
 
 int main(int argc, char * argv[])
 {
@@ -30,6 +31,21 @@ int main(int argc, char * argv[])
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
     SDL_ShowCursor(SDL_DISABLE);
+
+    /* New Stuff */
+    gf2d_entity_init(64);
+
+    Entity *test1 = gf2d_create_entity("test1");
+
+    test1->sprite = gf2d_sprite_load_image("sprites/cube.jpg");
+    test1->pos = gfc_vector2d(100,100);
+
+    Entity *test2 = gf2d_create_entity("test2");
+
+    test2->sprite = gf2d_sprite_load_image("sprites/ball.png");
+    test2->pos = gfc_vector2d(0,0);
+
+    
     
     /*demo setup*/
     sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
@@ -61,10 +77,14 @@ int main(int argc, char * argv[])
                 &mouseGFC_Color,
                 (int)mf);
 
+            gf2d_draw_all();
+
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
+
+        gf2d_entity_manager_slog();
     }
     slog("---==== END ====---");
     return 0;
