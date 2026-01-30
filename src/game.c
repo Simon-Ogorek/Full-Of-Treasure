@@ -9,6 +9,10 @@
 int main(int argc, char * argv[])
 {
     /*variable declarations*/
+    
+
+
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
     int done = 0;
     const Uint8 * keys;
     Sprite *sprite;
@@ -23,20 +27,29 @@ int main(int argc, char * argv[])
     slog("---==== BEGIN ====---");
     gf2d_graphics_initialize(
         "gf2d",
-        1200,
-        720,
-        1200,
-        720,
+        400,
+        240,
+        400,
+        240,
         gfc_vector4d(0,0,0,255),
-        0);
+        1);
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
     SDL_ShowCursor(SDL_DISABLE);
     
     /* New Stuff */
-    gf2d_entity_init(64, "sprites/sprite.json");
-    gf2d_map_init("map/maptiles.json");
+    int editor_mode = 0;
 
+    if (argv[1] && !strcmp(argv[1], "editor"))
+    {
+        editor_mode = 1;
+        slog("editor mode active");
+    }
+    
+    gf2d_entity_init(256, "sprites/sprite.json");
+    gf2d_map_init("map/maptiles.json", editor_mode);
+
+    
     
     float cubeTimer = 0;
     
@@ -56,12 +69,6 @@ int main(int argc, char * argv[])
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
         
-        cubeTimer+=1;
-        if (cubeTimer >= 10.0)
-        {
-            gf2d_create_entity("cube")  ;
-            cubeTimer = 0;  
-        }
 
 
         gf2d_graphics_clear_screen();// clears drawing buffers
@@ -91,11 +98,11 @@ int main(int argc, char * argv[])
                 (int)mf);
 
             gf2d_map_draw();
-            /*
+            
             gf2d_think_all();
             gf2d_update_all();
             gf2d_draw_all();
-            */
+            
 
             
 

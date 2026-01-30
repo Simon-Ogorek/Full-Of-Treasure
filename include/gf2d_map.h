@@ -17,7 +17,7 @@ typedef struct Map_Chunk
     GFC_Vector2D pos;
 };
 
-void gf2d_map_init(char *map_file);
+void gf2d_map_init(char *map_file, int editorMode);
 
 void gf2d_map_draw();
 void map_update();

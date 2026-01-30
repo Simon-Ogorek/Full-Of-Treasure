@@ -118,7 +118,7 @@ void gf2d_update_entity(Entity *ent)
 {
     ent->animation_frame += ent->animation_speed;
     ent->animation_frame = (ent->animation_frame >= ent->sprite->total_frames-1) ? 0 : ent->animation_frame;
-    slog("current frame of %s is %f at %f", ent->name, ent->animation_frame, ent->animation_speed);
+    //slog("current frame of %s is %f at %f", ent->name, ent->animation_frame, ent->animation_speed);
 }
 
 Entity * gf2d_create_entity(char* name)
@@ -139,7 +139,7 @@ Entity * gf2d_create_entity(char* name)
             char *filepath = sj_get_string_value(sj_object_get_value(ent_info, "filepath"));
             ent->sprite = gf2d_sprite_load_image(filepath);
             int code = sj_get_float_value(sj_object_get_value(ent_info, "animation_speed"), &ent->animation_speed);
-            slog("%f speed %i", ent->animation_speed, code);
+            //slog("%f speed %i", ent->animation_speed, code);
             return ent;
         }
     }

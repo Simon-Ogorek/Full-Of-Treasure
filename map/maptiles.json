@@ -1,13 +1,14 @@
 {
-    "sizeInPixels": 32,
+    "heightInPixels":16,
+    "widthInPixels": 32,
     "tilesets":
     [
         {        
             "name":"basic",
             "filepath":"map/BasicTileset.png",
 
-            "sheet_height":5,
-            "sheet_width":7,
+            "sheet_height":11,
+            "sheet_width":11,
 
             "tiles":
             [
@@ -33,8 +34,13 @@
 
     "map_layout":
     [
+        { "tile":"water", "x":2, "y":0, "z":0 },
+        { "tile":"water", "x":0, "y":1, "z":0 },
+        { "tile":"water", "x":1, "y":1, "z":-1 },
+        { "tile":"water", "x":2, "y":1, "z":-1 },
+        { "tile":"water", "x":2, "y":2, "z":0 },
         { "tile":"grass", "x":0, "y":2, "z":0 },
         { "tile":"water", "x":1, "y":2, "z":0 },
-        { "tile":"water", "x":0, "y":1, "z":0 }
+        { "tile":"water", "x":2, "y":3, "z":0 }
     ]
 }

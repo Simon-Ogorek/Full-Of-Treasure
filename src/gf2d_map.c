@@ -13,7 +13,7 @@ static struct Map_Manager
     GFC_HashMap *tiles;
 
     SJson *map_info_JSON;
-    int tile_size;
+    int tile_width, tile_height;
 }map_manager;
 
 typedef struct Tile_Definition
@@ -28,7 +28,7 @@ Tile_Definition *fetch_tile(char* name)
     return (Tile_Definition *)gfc_hashmap_get(map_manager.tiles, name);
 }
 
-void gf2d_map_init(char *map_file)
+void gf2d_map_init(char *map_file, int editorMode)
 {
     map_manager.chunks = gfc_list_new();
     map_manager.tiles = gfc_hashmap_new();
@@ -37,12 +37,15 @@ void gf2d_map_init(char *map_file)
 
     SJson *map_tilesets_JSON = sj_object_get_value(map_info_JSON, "tilesets");
 
-    int tile_size;
-    SJson *map_tile_size_JSON =  sj_object_get_value(map_info_JSON, "sizeInPixels");
-    sj_get_integer_value(map_tile_size_JSON, &tile_size);
-    map_manager.tile_size = tile_size;
+    int tile_width, tile_height;
+    SJson *map_tile_width_JSON =  sj_object_get_value(map_info_JSON, "widthInPixels");
+    sj_get_integer_value(map_tile_width_JSON, &tile_width);
+    SJson *map_tile_height_JSON =  sj_object_get_value(map_info_JSON, "heightInPixels");
+    sj_get_integer_value(map_tile_height_JSON, &tile_height);
+    map_manager.tile_width = tile_width;
+    map_manager.tile_height = tile_height;
     map_manager.map_info_JSON = map_info_JSON;
-    sj_get_integer_value(map_tile_size_JSON, &tile_size);
+
 
     for (int i = 0; i < sj_array_get_count(map_tilesets_JSON); i++)
     {
@@ -194,9 +197,12 @@ void gf2d_map_draw()
         sj_get_integer_value(tile_z_JSON, &tile_z);
 
         Tile_Definition* tile_DEF = fetch_tile(tile_name);
-        int tile_size = map_manager.tile_size;
+        int tile_width = map_manager.tile_width;
+        int tile_height = map_manager.tile_height;
 
-        GFC_Vector2D pos = gfc_vector2d(tile_x * tile_size, tile_y * tile_size);
+        GFC_Vector2D pos = gfc_vector2d(
+            tile_x * tile_width + (tile_width/2 * (tile_y % 2 == 0)),
+            tile_y * tile_height/2 + (tile_height/2 * tile_z));
         //slog("drawing map tile at %f, %f", pos.x, pos.y);
         gf2d_sprite_render(
             gf2d_sprite_load_image(tile_DEF->tileset_file),
