@@ -5,17 +5,17 @@
 #include "gfc_vector.h"
 #include "gfc_list.h"
 
-typedef struct Map_Tile
+typedef struct Map_Tile_S
 {
     Sprite *sprite;
     GFC_Vector2D pos;
-};
+} Map_Tile;
 
-typedef struct Map_Chunk
+typedef struct Map_Chunk_S
 {
     GFC_List tiles;
     GFC_Vector2D pos;
-};
+}Map_Chunk;
 
 void gf2d_map_init(char *map_file, int editorMode);
 

@@ -18,7 +18,7 @@ enum Entity_Status
 typedef struct Entity_S
 {
     Sprite *sprite;
-    GFC_Vector2D pos;
+    GFC_Vector3D position;
     float rotation;
 
     enum Entity_Status status;
@@ -30,6 +30,12 @@ typedef struct Entity_S
 
     float animation_frame;
     float animation_speed;
+
+    void (*draw)(struct Entity *self);
+    void (*update)(struct Entity *self);
+    void (*think)(struct Entity *self);
+
+    void *calling_parent
 }Entity;
 
 void gf2d_entity_init(int count, char* config_filepath);

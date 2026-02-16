@@ -7,6 +7,8 @@
 
 #include <SDL_image.h>
 
+#include "gf2d_camera.h"
+
 static struct Map_Manager
 {
     GFC_List *chunks;
@@ -200,9 +202,23 @@ void gf2d_map_draw()
         int tile_width = map_manager.tile_width;
         int tile_height = map_manager.tile_height;
 
+        GFC_Vector3D offsetedPos = {0};
+        gf2d_camera_offset(&offsetedPos);
+
+
+        float scaleTileToCordsX = (tile_width/2 * (tile_y % 2 == 0));
+        float scaleTileToCordsY = tile_height/2 + (tile_height/2 * tile_z);
+
         GFC_Vector2D pos = gfc_vector2d(
-            tile_x * tile_width + (tile_width/2 * (tile_y % 2 == 0)),
-            tile_y * tile_height/2 + (tile_height/2 * tile_z));
+            tile_width * tile_x + scaleTileToCordsX,
+            tile_y * scaleTileToCordsY);
+
+        slog("Original Position: %f %f | offset : %f %f %f", gfc_vector3d_to_slog(offsetedPos));
+        
+        pos.x += offsetedPos.x;
+        pos.y += offsetedPos.y;
+
+        
         //slog("drawing map tile at %f, %f", pos.x, pos.y);
         gf2d_sprite_render(
             gf2d_sprite_load_image(tile_DEF->tileset_file),

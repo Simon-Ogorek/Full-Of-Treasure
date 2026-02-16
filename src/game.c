@@ -5,6 +5,8 @@
 #include "gf2d_sprite.h"
 #include "gf2d_entity.h"
 #include "gf2d_map.h"
+#include "gf2d_camera.h"
+#include "gf2d_player.h"
 
 int main(int argc, char * argv[])
 {
@@ -37,6 +39,7 @@ int main(int argc, char * argv[])
     gf2d_sprite_init(1024);
     SDL_ShowCursor(SDL_DISABLE);
     
+    
     /* New Stuff */
     int editor_mode = 0;
 
@@ -49,7 +52,10 @@ int main(int argc, char * argv[])
     gf2d_entity_init(256, "sprites/sprite.json");
     gf2d_map_init("map/maptiles.json", editor_mode);
 
-    
+    Player *player = gf2d_spawn_player();
+    gf2d_camera_init(gfc_vector3d(0,0,0), 1, 0.1);
+    gf2d_camera_assign_target(player->ent);
+
     
     float cubeTimer = 0;
     
@@ -103,6 +109,7 @@ int main(int argc, char * argv[])
             gf2d_update_all();
             gf2d_draw_all();
             
+            gf2d_camera_update();
 
             
 

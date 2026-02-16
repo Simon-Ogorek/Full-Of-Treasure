@@ -4,7 +4,7 @@
 #include <SDL_image.h>
 #include "gfc_hashmap.h"
 #include "gfc_config_def.h"
-
+#include "gf2d_camera.h"
 static struct Entity_Manager
 {
     Entity *all_ents;
@@ -82,6 +82,8 @@ void gf2d_entity_init(int count, char* config_filepath)
     int i;
 
     entityManager.all_ents = (Entity *)gfc_allocate_array(sizeof(Entity), count);
+    memset(entityManager.all_ents,0,sizeof(Entity)*count);
+
     entityManager.count = count;
 
     for (i = 0; i < count; i++)
@@ -96,8 +98,12 @@ void gf2d_entity_init(int count, char* config_filepath)
 
 void gf2d_draw_entity(Entity *ent)
 {
+    GFC_Vector3D pos = ent->position;
+    gf2d_camera_offset(&pos);
+
+    slog("ent : %f %f %f | offseted : %f %f %f", gfc_vector3d_to_slog(ent->position), gfc_vector3d_to_slog(pos));
     gf2d_sprite_draw( ent->sprite, 
-        ent->pos,
+        gfc_vector3dxy(pos),
         NULL,
         NULL,
         NULL,
@@ -108,10 +114,7 @@ void gf2d_draw_entity(Entity *ent)
 
 void gf2d_think_entity(Entity *ent)
 {
-    if (ent->animation_frame == 0)
-    {
-        ent->pos = gfc_vector2d(rand()%1200, rand()%700);
-    }
+    return;
 }
 
 void gf2d_update_entity(Entity *ent)
@@ -162,10 +165,16 @@ void gf2d_think_all()
     {
         ent = &entityManager.all_ents[i];
 
-        if (ent->status == Active)
+        if (ent->status != Active)
+            continue;
+
+        if (!ent->think)
         {
             gf2d_think_entity(ent);
+            continue;
         }
+
+        ent->think(ent);
     }
 }
 
@@ -178,10 +187,16 @@ void gf2d_update_all()
     {
         ent = &entityManager.all_ents[i];
 
-        if (ent->status == Active)
+        if (ent->status != Active)
+            continue;
+
+        if (!ent->update)
         {
             gf2d_update_entity(ent);
+            continue;
         }
+
+        ent->update(ent);
     }
 }
 
@@ -194,10 +209,16 @@ void gf2d_draw_all()
     {
         ent = &entityManager.all_ents[i];
 
-        if (ent->status == Active)
+        if (ent->status != Active)
+            continue;
+
+        if (!ent->update)
         {
             gf2d_draw_entity(ent);
+            continue;
         }
+
+        ent->draw(ent);
     }
 }
 
@@ -212,7 +233,7 @@ void gf2d_entity_manager_slog()
 
         if (ent->status == Active)
         {
-            slog("%s | %i | %f, %f", ent->name, i, ent->pos.x, ent->pos.y);
+            slog("%s | %i | %f, %f", ent->name, i, ent->position.x, ent->position.y);
         }
     }
 }
