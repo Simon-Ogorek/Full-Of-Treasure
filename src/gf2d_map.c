@@ -9,10 +9,22 @@
 
 #include "gf2d_camera.h"
 
+#define Tile_Delimeter (short)65535;
+
+typedef struct Tile
+{
+    unsigned char tile_idx;
+    unsigned char flags;
+}Tile;
+
+
 static struct Map_Manager
 {
     GFC_List *chunks;
     GFC_HashMap *tiles;
+
+    Tile *map;
+    int tile_count;
 
     SJson *map_info_JSON;
     int tile_width, tile_height;
@@ -20,10 +32,11 @@ static struct Map_Manager
 
 typedef struct Tile_Definition
 {
-    char* tileset_file;
-    int frame;
-
+    unsigned char tileset_file_idx;
+    unsigned char frame;
 }Tile_Definition;
+
+
 
 Tile_Definition *fetch_tile(char* name)
 {
@@ -121,6 +134,7 @@ void gf2d_map_init(char *map_file, int editorMode)
             continue;
         }
 
+        Tile_Definition *tile = (Tile_Definition *)malloc(sizeof(Tile_Definition) * sj_array_get_count(tiles_JSON));
         for (int j = 0; j < sj_array_get_count(tiles_JSON); j++)
         {
             SJson *tile_info_JSON = sj_array_get_nth(tiles_JSON, j);
@@ -129,9 +143,8 @@ void gf2d_map_init(char *map_file, int editorMode)
                 slog("Bad JSON in %s at entry %i for map", map_file, j);
                 continue;
             }
-            Tile_Definition *tile = (Tile_Definition *)malloc(sizeof(Tile_Definition));
         
-            tile->tileset_file = tileset_file;
+            tile->tileset_file_idx = 1; // TODO
 
             int tile_x, tile_y;
             
@@ -153,15 +166,9 @@ void gf2d_map_init(char *map_file, int editorMode)
             }
 
             gfc_hashmap_insert(map_manager.tiles, tile_name, tile);
+            tile++;
         }
     }
-
-    #pragma endregion
-}
-
-void gf2d_map_draw()
-{
-    #pragma region Map_Spawning
 
     SJson *map_layout_JSON = sj_object_get_value(map_manager.map_info_JSON, "map_layout");
 
@@ -170,41 +177,62 @@ void gf2d_map_draw()
         slog("Bad JSON in draw");
         return;
     }
-    for (int i = 0; i < sj_array_get_count(map_layout_JSON); i++)
+
+    SJson *map_tiles_amount_JSON = sj_object_get_value(map_layout_JSON, "count");
+
+    if (!map_tiles_amount_JSON)
     {
-        SJson *tile_JSON = sj_array_get_nth(map_layout_JSON, i);
+        slog("Bad tile amount JSON in draw");
+        return;
+    }
 
-        if (!tile_JSON)
+    sj_get_integer_value(map_tilesets_JSON, &map_manager.tile_count);
+
+    slog("tile count: %i", map_manager.tile_count);
+    map_manager.tile_count = 25000;
+
+    map_manager.map = (Tile*)malloc(sizeof(Tile) * map_manager.tile_count);
+    
+    char * filepath = sj_get_string_value(sj_object_get_value(map_layout_JSON,"path"));
+
+    FILE *file = fopen(filepath, "rb");
+    if (file == NULL) {
+        perror("Error opening binary file");
+        return -1;
+    }
+
+    fread(map_manager.map, sizeof(Tile), map_manager.tile_count, file);
+
+
+    #pragma endregion
+}
+
+void gf2d_map_draw()
+{
+    #pragma region Map_Spawning
+
+    //printf("===========================================\n");
+    Tile *tile = map_manager.map;
+    int tile_x = 0;
+    int tile_y = 0;
+    int tile_z = 0;
+    //printf("Started");
+    while (*(Uint16 *)tile != 0)
+    {
+        //printf("Tile: %hu\n", *tile);
+        if (*(Uint16 *)tile == 65535)
         {
-            slog("Bad tile JSON at entry %i for map", i);
+            tile_y++;
+            tile_x=0;
+            tile++;
             continue;
         }
-
-        SJson *tile_name_JSON = sj_object_get_value(tile_JSON, "tile");
-        SJson *tile_x_JSON = sj_object_get_value(tile_JSON, "x");
-        SJson *tile_y_JSON = sj_object_get_value(tile_JSON, "y");
-        SJson *tile_z_JSON = sj_object_get_value(tile_JSON, "z");
-
-        if (!tile_name_JSON || !tile_x_JSON || !tile_y_JSON || !tile_z_JSON)
-        {
-            slog("bad tile info at %i", i);
-            continue;
-        }
-
-        char *tile_name = sj_get_string_value(tile_name_JSON);
-        int tile_x, tile_y, tile_z;
-
-        sj_get_integer_value(tile_x_JSON, &tile_x);
-        sj_get_integer_value(tile_y_JSON, &tile_y);
-        sj_get_integer_value(tile_z_JSON, &tile_z);
-
-        Tile_Definition* tile_DEF = fetch_tile(tile_name);
+        Tile_Definition* tile_DEF = fetch_tile  ("grass");
         int tile_width = map_manager.tile_width;
         int tile_height = map_manager.tile_height;
 
         GFC_Vector3D offsetedPos = {0};
         gf2d_camera_offset(&offsetedPos);
-
 
         float scaleTileToCordsX = (tile_width/2 * (tile_y % 2 == 0));
         float scaleTileToCordsY = tile_height/2 + (tile_height/2 * tile_z);
@@ -213,15 +241,15 @@ void gf2d_map_draw()
             tile_width * tile_x + scaleTileToCordsX,
             tile_y * scaleTileToCordsY);
 
-        slog("Original Position: %f %f | offset : %f %f %f", gfc_vector3d_to_slog(offsetedPos));
+        //slog("Original Position: %f %f | offset : %f %f %f", gfc_vector3d_to_slog(offsetedPos));
         
-        pos.x += offsetedPos.x;
-        pos.y += offsetedPos.y;
+        pos.x -= offsetedPos.x;
+        pos.y -= offsetedPos.y;
 
         
         //slog("drawing map tile at %f, %f", pos.x, pos.y);
         gf2d_sprite_render(
-            gf2d_sprite_load_image(tile_DEF->tileset_file),
+            gf2d_sprite_load_image("map/BasicTileset.png"), // TODO TO MAKE A INDEX
             pos,
             NULL,
             NULL,
@@ -231,7 +259,11 @@ void gf2d_map_draw()
             NULL,
             tile_DEF->frame
         );
+        //slog("Draw a tile at %i %i\n", tile_x,tile_y);
+        tile++;
+        tile_x++;
     }
+    
     #pragma endregion
 }   
 void map_update();

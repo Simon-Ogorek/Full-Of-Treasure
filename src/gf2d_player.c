@@ -6,6 +6,9 @@ Player *gf2d_spawn_player()
     Player *player = (Player *)malloc(sizeof(Player));
 
     player->ent = gf2d_create_entity("player");
+    player->ent->position.x = 0;
+    player->ent->position.y = 0;
+    player->ent->position.z = 0;
 
     player->ent->think = &gf2d_player_think;
     player->ent->calling_parent = (void *)player;
@@ -23,19 +26,19 @@ void gf2d_player_think(Entity *ent)
 
     if (keys[SDL_SCANCODE_W])
     {
-        player->ent->position.y -= player->speed;
+        player->ent->position.y += player->speed;
     }
     if (keys[SDL_SCANCODE_S])
     {
-        player->ent->position.y += player->speed;
+        player->ent->position.y -= player->speed;
     }
     if (keys[SDL_SCANCODE_A])
     {
-        player->ent->position.x -= player->speed;
+        player->ent->position.x += player->speed;
     }
     if (keys[SDL_SCANCODE_D])
     {
-        player->ent->position.x += player->speed;
+        player->ent->position.x -= player->speed;
     }
 
     

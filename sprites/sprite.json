@@ -22,10 +22,10 @@
         },
         {
             "name": "player",
-            "filepath" : "sprites/player.png",
-            "sheet_width" : 12,
-            "sheet_height" : 7,
-            "animation_speed" : 0
+            "filepath" : "images/iso_renders/output/spritesheet.png",
+            "sheet_width" : 24,
+            "sheet_height" : 8,
+            "animation_speed" : 0.2
         }
     ],
 

@@ -99,9 +99,10 @@ void gf2d_entity_init(int count, char* config_filepath)
 void gf2d_draw_entity(Entity *ent)
 {
     GFC_Vector3D pos = ent->position;
-    gf2d_camera_offset(&pos);
+    if (gf2d_camera_is_target != ent)
+        gf2d_camera_offset(&pos);
 
-    slog("ent : %f %f %f | offseted : %f %f %f", gfc_vector3d_to_slog(ent->position), gfc_vector3d_to_slog(pos));
+    //slog("ent : %f %f %f | offseted : %f %f %f", gfc_vector3d_to_slog(ent->position), gfc_vector3d_to_slog(pos));
     gf2d_sprite_draw( ent->sprite, 
         gfc_vector3dxy(pos),
         NULL,

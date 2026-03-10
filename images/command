@@ -1,0 +1,2 @@
+montage *.png -background transparent -tile 24X8 output/spritesheet.png
+

@@ -27,5 +27,5 @@ void gf2d_camera_update();
 
 void gf2d_camera_offset(GFC_Vector3D *input);
 
-
+Uint8 gf2d_camera_is_target(Entity *ptr);
 #endif

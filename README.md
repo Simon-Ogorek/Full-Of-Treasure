@@ -21,3 +21,28 @@ This project is based upon the gameframework2d game engine core, which itself us
         *   For data driven design
     *   Make ( Porting this to CMake )
 
+
+
+__Midterm Deliverables__
+
+1. Functional Entity System ✅
+
+2. Contained interactive environment
+
+3. Functional User Interface
+
+4. User Controls (Keyboard, Mouse, and/or controller) ✅ 
+
+5. Collision Detection
+
+Personable 
+
+6. Isometric Game World ✅
+
+7. 5 Different Enemies
+
+8. 5 Different World Interactable World Elements
+
+9. 5 Basic Faculties ( Move , Block, Run )
+
+10. Skill Tree

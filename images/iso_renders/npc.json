@@ -1,0 +1,19 @@
+{
+    "npcs":
+    [
+        {
+            "file":"tileset.png",
+            "directions": 8,
+            "animations":
+            [
+                {
+                    "name":"idle",
+                    "continuation":null,
+                    "loopable": true,
+                    "moves": null
+                }
+            ]
+
+        }
+    ]
+}

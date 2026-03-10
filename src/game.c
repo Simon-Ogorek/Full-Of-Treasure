@@ -15,6 +15,7 @@ int main(int argc, char * argv[])
 
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
+    
     int done = 0;
     const Uint8 * keys;
     Sprite *sprite;
@@ -82,7 +83,7 @@ int main(int argc, char * argv[])
             //backgrounds drawn first
             //gf2d_sprite_draw_image(sprite,gfc_vector2d(0,0));
             
-            //UI elements last
+            //UI elements last  
             /*gf2d_sprite_draw(
                 mouse,
                 gfc_vector2d(mx,my),

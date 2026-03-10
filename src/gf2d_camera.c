@@ -27,8 +27,12 @@ void gf2d_camera_update()
 {
     if (camera.target)
     {
-        camera.target_position = camera.target->position;
+        gfc_vector3d_copy(camera.position, camera.target->position);  
+        camera.position.x -= 400/3;
+        camera.position.y -= 240/4;
     }
+    /*
+    
 
     GFC_Vector3D difference;
     difference = gfc_vector3d_subbed(camera.target_position, camera.position);
@@ -39,16 +43,22 @@ void gf2d_camera_update()
 
     slog("camera heading : %f %f %f ", gfc_vector3d_to_slog(difference));
     gfc_vector3d_add(camera.position, camera.position, difference);
+    */
 
 
 
     
 }
 
+Uint8 gf2d_camera_is_target(Entity *ptr)
+{
+    return (ptr == camera.target);
+}
+
 void gf2d_camera_offset(GFC_Vector3D *input)
 {
 
-    input->x += camera.position.x;
-    input->y += camera.position.y;
-    input->z += camera.position.z;
+    input->x -= camera.position.x;
+    input->y -= camera.position.y;
+    input->z -= camera.position.z;
 }
