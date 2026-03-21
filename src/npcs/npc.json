@@ -1,0 +1,65 @@
+{
+    "npcs":
+    [
+        {
+            "name":"Joe Goblinius",
+            "sprite":"goblin",
+            "dialogue":
+            {
+
+                "d_txt":
+                [
+                    "Joe Goblinius is happy to meet your face!"
+                ],
+
+                "s_txt":
+                {
+                    "txt":"Hello my name is Joe Goblinius, I like gummy worms and stabby stabbies",
+                    "options":
+                    [
+                        {
+                            "out":"I like gummy worms too!",
+                            "cons": 
+                            [
+                                {"flag":"gummy"},
+                                {"value":"true"}
+                            ]
+                        },
+                        {
+                            "out":"I like stabbie stabbies too!",
+                            "cons": 
+                            [
+                                {"flag":"stabby"},
+                                {"value":"true"}
+                            ]
+                        }
+                    ]
+                },
+
+                "gummy":
+                {
+                    "txt":"YAYYYYYYYY! :)))))",
+                    "options":
+                    [
+                        {
+                            "out":"You are given a Gummy Worm",
+                            "cons": 
+                            [
+                                {"flag":"gummy"},
+                                {"value":"false"}
+                            ]
+                        }
+                    ]
+                },
+
+                "stabby":
+                {
+                    "txt":"OOOOO LET ME SHOW YOU MINE",
+                    "agro":true
+
+                }
+
+            }
+        }
+    ]
+}

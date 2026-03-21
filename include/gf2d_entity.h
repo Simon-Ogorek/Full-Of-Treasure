@@ -21,6 +21,9 @@ typedef struct Entity_S
     GFC_Vector3D position;
     float rotation;
 
+    int health;
+    int max_health;
+
     enum Entity_Status status;
 
     char* name;
@@ -49,6 +52,13 @@ void gf2d_update_all();
 void gf2d_draw_all();
 
 void gf2d_entity_manager_slog();
+Entity *gf2d_find_entity(char* name);
+
+void gf2d_entity_pause(Uint8 TorF);
 
 void gf2d_get_entity(char * name);
+
+void gf2d_entity_set_pause(Uint8 TorF);
+
+Uint8 gf2d_entity_get_pause();
 #endif

@@ -18,6 +18,7 @@ typedef struct Sprite_S
 
     /* CUSTOM */
     Uint32 total_frames;
+    Uint32 padding;
 }Sprite;
 
 /**
@@ -53,6 +54,7 @@ Sprite *gf2d_sprite_load_all(
     Sint32 frameWidth,
     Sint32 frameHeigh,
     Sint32 framesPerLine,
+    Sint32  framePadding,
     Bool    keepSurface
 );
 

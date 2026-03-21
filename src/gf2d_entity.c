@@ -9,6 +9,7 @@ static struct Entity_Manager
 {
     Entity *all_ents;
     int count;
+    Uint8 paused;
 } entityManager;
 
 
@@ -65,7 +66,8 @@ void gf2d_preload_sprites(char* config_filepath)
             temp->w / frameWidth,
             temp->h / frameHeight,
             frameWidth,
-            false);
+            false,
+            0);
         SDL_FreeSurface(temp);
 
 
@@ -152,6 +154,23 @@ Entity * gf2d_create_entity(char* name)
     return NULL;
 
 }
+
+Entity *gf2d_find_entity(char* name)
+{
+    Entity *ent;
+    int i;
+
+    for (i = 0; i < entityManager.count; i++)
+    {
+        ent = &entityManager.all_ents[i];
+
+        if (ent->status != Inactive && strcmp(ent->name, name) == 0)
+        {
+            ent->status = Active;
+            return ent;
+        }
+    }
+}
 void gf2d_delete_entity(Entity *ent)
 {
     free(ent->sprite);
@@ -161,6 +180,9 @@ void gf2d_think_all()
 {
     Entity *ent;
     int i;
+
+    if (entityManager.paused)
+        return;
 
     for (i = 0; i < entityManager.count; i++)
     {
@@ -183,6 +205,9 @@ void gf2d_update_all()
 {
     Entity *ent;
     int i;
+
+    if (entityManager.paused)
+        return;
 
     for (i = 0; i < entityManager.count; i++)
     {
@@ -237,4 +262,15 @@ void gf2d_entity_manager_slog()
             slog("%s | %i | %f, %f", ent->name, i, ent->position.x, ent->position.y);
         }
     }
+}
+
+void gf2d_entity_set_pause(Uint8 TorF)
+{
+    entityManager.paused = TorF;
+    slog("set pause");
+}
+
+Uint8 gf2d_entity_get_pause()
+{
+    return entityManager.paused;
 }

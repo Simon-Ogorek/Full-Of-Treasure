@@ -7,6 +7,7 @@
 #include "gf2d_map.h"
 #include "gf2d_camera.h"
 #include "gf2d_player.h"
+#include "gf2d_ui.h"
 
 int main(int argc, char * argv[])
 {
@@ -38,6 +39,7 @@ int main(int argc, char * argv[])
         1);
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
+    
     SDL_ShowCursor(SDL_DISABLE);
     
     
@@ -57,13 +59,16 @@ int main(int argc, char * argv[])
     gf2d_camera_init(gfc_vector3d(0,0,0), 1, 0.1);
     gf2d_camera_assign_target(player->ent);
 
+    gf2d_ui_init(player->ent);
+
     
     float cubeTimer = 0;
     
     /*demo setup*/
     sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
-    mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
+    mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0,0);
     slog("press [escape] to quit");
+    Uint8 pausedPressed = 0;
     /*main game loop*/
 
     int cube = 0;
@@ -112,11 +117,20 @@ int main(int argc, char * argv[])
             
             gf2d_camera_update();
 
+            gf2d_ui_update();
+
             
 
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
-        if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
+        if (keys[SDL_SCANCODE_ESCAPE]) {done = 1;} // exit condition
+
+        if (keys[SDL_SCANCODE_BACKSPACE] && !pausedPressed)
+        {
+            gf2d_entity_set_pause(!gf2d_entity_get_pause());
+        }
+
+        pausedPressed = keys[SDL_SCANCODE_BACKSPACE];
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
 
         //gf2d_entity_manager_slog();

@@ -1,0 +1,38 @@
+[
+    {
+        "name":"goblin",
+        "max_health": 3,
+        "speed": 0.5,
+        "moves":
+        [
+            {
+                "name":"stab",
+                "weight":20,
+                "range":20,
+                "damage":1,
+                "cooldown": 1
+            }
+
+        ]
+    },
+    {
+        "name":"wizard",
+        "max_health": 2,
+        "speed": 0.5,
+        "moves":
+        [
+            {
+                "name":"fireball",
+                "weight":20,
+                "range":50,
+                "damage":2,
+                "cooldown": 3,
+                "visual":
+                {
+                    "sprite":"fireball",
+                    "projectile_speed":4
+                }
+            }
+        ]
+    }
+]

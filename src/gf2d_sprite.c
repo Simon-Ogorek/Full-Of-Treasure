@@ -126,7 +126,7 @@ Sprite *gf2d_sprite_get_by_filename(const char * filename)
 
 Sprite *gf2d_sprite_load_image(const char *filename)
 {
-    return gf2d_sprite_load_all(filename,-1,-1,1,false);
+    return gf2d_sprite_load_all(filename,-1,-1,1,false,0);
 }
 
 Sprite *gf2d_sprite_load_all(
@@ -134,6 +134,7 @@ Sprite *gf2d_sprite_load_all(
     Sint32  frameWidth,
     Sint32  frameHeight,
     Sint32  framesPerLine,
+    Sint32  framePadding,
     Bool    keepSurface
 )
 {
@@ -197,6 +198,7 @@ Sprite *gf2d_sprite_load_all(
     else sprite->frame_w = frameWidth;
     sprite->frames_per_line = framesPerLine;
     sprite->total_frames = framesPerLine * (surface->h / frameHeight);
+    sprite->padding = framePadding;
     gfc_line_cpy(sprite->filepath,filename);
 
     if(!keepSurface)
@@ -372,8 +374,10 @@ void gf2d_sprite_render(
             sprite->texture,
             colorShift.w);
     }
-    
+
     fpl = (sprite->frames_per_line)?sprite->frames_per_line:1;
+    if (sprite->padding != 0)
+        slog("padding : %i", (frame%fpl + 1) * sprite->padding);
     gfc_rect_set(
         cell,
         (frame%fpl * sprite->frame_w) + (drawClip.x * sprite->frame_w),

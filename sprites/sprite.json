@@ -26,6 +26,33 @@
             "sheet_width" : 24,
             "sheet_height" : 8,
             "animation_speed" : 0.2
+        },
+        {
+            "name": "heart_full",
+            "filepath" : "sprites/heart_full.png",
+
+            "sheet_width" : 1,
+            "sheet_height" : 1,
+
+            "animation_speed" : 0
+        },
+        {
+            "name": "heart_dead",
+            "filepath" : "sprites/heart_dead.png",
+
+            "sheet_width" : 1,
+            "sheet_height" : 1,
+
+            "animation_speed" : 0
+        },
+        {
+            "name": "goblin",
+            "filepath" : "sprites/goblin.png",
+
+            "sheet_width" : 1,
+            "sheet_height" : 1,
+
+            "animation_speed" : 0
         }
     ],
 

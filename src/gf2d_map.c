@@ -119,7 +119,8 @@ void gf2d_map_init(char *map_file, int editorMode)
             image_width / sheet_width,
             image_height / sheet_height,
             sheet_width,
-            NULL
+            NULL,
+            0
         );
 
         #pragma endregion

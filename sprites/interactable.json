@@ -1,0 +1,17 @@
+[
+    {
+        "name":"wayshrine",
+        "sprite":"wayshrine",
+        "function":"wayshrine_interact"
+    },
+    {
+        "name":"door",
+        "sprite":"door",
+        "function":"door_interact"
+    },
+    {
+        "name":"vending",
+        "sprite":"vending",
+        "function":"vending_interact"
+    }
+]
