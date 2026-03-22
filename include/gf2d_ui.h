@@ -8,8 +8,11 @@
 #include "gfc_vector.h"
 #include "gfc_text.h"
 #include "gf2d_entity.h"
+#include "gf2d_player.h"
 
-void gf2d_ui_init(Entity *tracked);
+void gf2d_ui_init(Player *tracked);
 
 void gf2d_ui_update();
+
+void gf2d_ui_set_tree(Uint8 TorF);
 #endif

@@ -14,7 +14,7 @@ int main(int argc, char * argv[])
     /*variable declarations*/
     
 
-
+    
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
     
     int done = 0;
@@ -51,7 +51,7 @@ int main(int argc, char * argv[])
         editor_mode = 1;
         slog("editor mode active");
     }
-    
+    gf2d_text_init();
     gf2d_entity_init(256, "sprites/sprite.json");
     gf2d_map_init("map/maptiles.json", editor_mode);
 
@@ -59,7 +59,8 @@ int main(int argc, char * argv[])
     gf2d_camera_init(gfc_vector3d(0,0,0), 1, 0.1);
     gf2d_camera_assign_target(player->ent);
 
-    gf2d_ui_init(player->ent);
+    gf2d_ui_init(player);
+
 
     
     float cubeTimer = 0;
@@ -128,6 +129,7 @@ int main(int argc, char * argv[])
         if (keys[SDL_SCANCODE_BACKSPACE] && !pausedPressed)
         {
             gf2d_entity_set_pause(!gf2d_entity_get_pause());
+            gf2d_ui_set_tree(gf2d_entity_get_pause());
         }
 
         pausedPressed = keys[SDL_SCANCODE_BACKSPACE];

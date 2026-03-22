@@ -17,6 +17,12 @@ Player *gf2d_spawn_player()
     player->ent->max_health = 5;
     player->ent->health = 3;
 
+    player->melee_upgrade = 0;
+    player->speed_upgrade = 0;
+    player->damage_upgrade = 0;
+
+    player->skillPoints = 1;
+
     return player;
 
 }
@@ -51,4 +57,40 @@ void gf2d_player_think(Entity *ent)
     }
 
     
+}
+
+Uint8 gf2d_player_buy_melee(Player* player)
+{
+    if (player->skillPoints <= 0)
+        return 0;
+    if (player->melee_upgrade)
+        return 0;
+
+    player->skillPoints--;
+    player->melee_upgrade = 1;
+    return 1;
+}
+
+Uint8 gf2d_player_buy_speed(Player* player)
+{
+    if (player->skillPoints <= 0)
+        return 0;
+    if (player->speed_upgrade)
+        return 0;
+
+    player->skillPoints--;
+    player->speed_upgrade = 1;
+    return 1;
+}
+
+Uint8 gf2d_player_buy_damage(Player* player)
+{
+    if (player->skillPoints <= 0)
+        return 0;
+    if (player->damage_upgrade)
+        return 0;
+
+    player->skillPoints--;
+    player->damage_upgrade = 1;
+    return 1;
 }
