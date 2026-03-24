@@ -7,6 +7,8 @@
 #include "gfc_vector.h"
 #include "gf2d_sprite.h"
 
+#include "gfc_shape.h"
+
 #include "gfc_list.h"
 
 enum Entity_Status
@@ -19,10 +21,17 @@ typedef struct Entity_S
 {
     Sprite *sprite;
     GFC_Vector3D position;
+    GFC_Vector3D next_movement;
+
+    Uint8 collides;
+
+    GFC_Rect collide_rect;
+
     float rotation;
 
     int health;
     int max_health;
+    float speed;
 
     enum Entity_Status status;
 
@@ -34,11 +43,13 @@ typedef struct Entity_S
     float animation_frame;
     float animation_speed;
 
+    Uint8 dead;
+
     void (*draw)(struct Entity *self);
     void (*update)(struct Entity *self);
     void (*think)(struct Entity *self);
 
-    void *calling_parent
+    void *calling_parent;
 }Entity;
 
 void gf2d_entity_init(int count, char* config_filepath);
@@ -54,6 +65,8 @@ void gf2d_draw_all();
 void gf2d_entity_manager_slog();
 Entity *gf2d_find_entity(char* name);
 
+void gf2d_update_collisions_entity(Entity *ent, Uint8 resize);
+
 void gf2d_entity_pause(Uint8 TorF);
 
 void gf2d_get_entity(char * name);
@@ -61,4 +74,6 @@ void gf2d_get_entity(char * name);
 void gf2d_entity_set_pause(Uint8 TorF);
 
 Uint8 gf2d_entity_get_pause();
+
+void gf2d_update_entity(Entity *ent);
 #endif

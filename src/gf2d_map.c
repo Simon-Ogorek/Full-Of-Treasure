@@ -26,6 +26,8 @@ static struct Map_Manager
     Tile *map;
     int tile_count;
 
+    GFC_Rect bound_rect;
+
     SJson *map_info_JSON;
     int tile_width, tile_height;
 }map_manager;
@@ -168,7 +170,10 @@ void gf2d_map_init(char *map_file, int editorMode)
 
             gfc_hashmap_insert(map_manager.tiles, tile_name, tile);
             tile++;
+
         }
+
+
     }
 
     SJson *map_layout_JSON = sj_object_get_value(map_manager.map_info_JSON, "map_layout");
@@ -204,8 +209,18 @@ void gf2d_map_init(char *map_file, int editorMode)
 
     fread(map_manager.map, sizeof(Tile), map_manager.tile_count, file);
 
-
+    map_manager.bound_rect.x = 0;
+    map_manager.bound_rect.y = 0;
+    map_manager.bound_rect.w = 70*32;
+    map_manager.bound_rect.h = 70*16;
     #pragma endregion
+}
+
+GFC_Rect gf2d_map_bounds()
+{
+    //slog("world rect");
+    //gfc_rect_slog(map_manager.bound_rect);
+    return map_manager.bound_rect;
 }
 
 void gf2d_map_draw()
@@ -264,6 +279,13 @@ void gf2d_map_draw()
         tile++;
         tile_x++;
     }
+
+    map_manager.bound_rect.x = 32;
+    map_manager.bound_rect.y = 16;
+
+    GFC_Vector3D *offset = gf2d_camera_get_offset();
+    map_manager.bound_rect.x -= offset->x;
+    map_manager.bound_rect.y -= offset->y;
     
     #pragma endregion
 }   

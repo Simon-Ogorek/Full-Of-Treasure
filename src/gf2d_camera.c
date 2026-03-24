@@ -30,6 +30,7 @@ void gf2d_camera_update()
         gfc_vector3d_copy(camera.position, camera.target->position);  
         camera.position.x -= 400/3;
         camera.position.y -= 240/4;
+        
     }
     /*
     
@@ -57,8 +58,14 @@ Uint8 gf2d_camera_is_target(Entity *ptr)
 
 void gf2d_camera_offset(GFC_Vector3D *input)
 {
+    input->x += camera.position.x;
+    input->y += camera.position.y;
+    input->z += camera.position.z;
 
-    input->x -= camera.position.x;
-    input->y -= camera.position.y;
-    input->z -= camera.position.z;
+}
+
+GFC_Vector3D * gf2d_camera_get_offset()
+{
+    return &camera.position;
+
 }

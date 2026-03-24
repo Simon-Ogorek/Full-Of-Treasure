@@ -167,7 +167,7 @@ void gf2d_ui_update()
                 break;
             case 1:
                 UI_Manager.middle.selected = 1;
-                gf2d_text_draw(TREE_FONT, "Learn how to use your sword and slash enemies in front of you!", gfc_vector2d(30, 170), text_color, 380);
+                gf2d_text_draw(TREE_FONT, "Learn how to use your sword and not hurt yourself in the process!", gfc_vector2d(30, 170), text_color, 380);
                 if (buy_key)
                 {
                     if (gf2d_player_buy_melee(UI_Manager.tracked))

@@ -8,12 +8,13 @@
 #include "gf2d_camera.h"
 #include "gf2d_player.h"
 #include "gf2d_ui.h"
+#include "gf2d_enemy.h"
 
 int main(int argc, char * argv[])
 {
     /*variable declarations*/
     
-
+    float timer = 20;
     
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
     
@@ -72,6 +73,13 @@ int main(int argc, char * argv[])
     Uint8 pausedPressed = 0;
     /*main game loop*/
 
+    Entity *waystone = gf2d_create_entity("waystone");
+    waystone->position.x = 100;
+    gf2d_update_collisions_entity(waystone, 1);
+
+    gf2d_enemy_init(128);
+    
+
     int cube = 0;
     while(!done)
     {
@@ -119,6 +127,17 @@ int main(int argc, char * argv[])
             gf2d_camera_update();
 
             gf2d_ui_update();
+
+            timer -= 0.1;
+            
+
+            if (timer <= 0)
+            {
+                timer = 20;
+                Enemy * enemy = gf2d_create_enemy("cube");
+                enemy->ent->position.x = gfc_random_int(2000) + 500;
+                enemy->ent->position.y = gfc_random_int(2000) + 500;
+            }
 
             
 

@@ -53,7 +53,26 @@
             "sheet_height" : 1,
 
             "animation_speed" : 0
+        },
+        {
+            "name": "waystone",
+            "filepath" : "sprites/skillstone.png",
+
+            "sheet_width" : 1,
+            "sheet_height" : 1,
+
+            "animation_speed" : 0
+        },
+        {
+            "name":"goblin",
+            "filepath" : "sprites/goblin.png",
+
+            "sheet_width" : 1,
+            "sheet_height" : 2,
+
+            "animation_speed" : 0.3
         }
+
     ],
 
     "surfaces": [

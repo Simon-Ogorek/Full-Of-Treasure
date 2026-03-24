@@ -24,8 +24,9 @@ void gf2d_camera_assign_position(GFC_Vector3D new_position);
 void gf2d_camera_assign_target(Entity *new_target);
 
 void gf2d_camera_update();
-
+Uint8 gf2d_camera_is_target(Entity *ptr);
 void gf2d_camera_offset(GFC_Vector3D *input);
 
-Uint8 gf2d_camera_is_target(Entity *ptr);
+GFC_Vector3D * gf2d_camera_get_offset();
+
 #endif

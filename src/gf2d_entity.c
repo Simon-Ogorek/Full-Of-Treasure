@@ -5,6 +5,10 @@
 #include "gfc_hashmap.h"
 #include "gfc_config_def.h"
 #include "gf2d_camera.h"
+
+#include "gf2d_draw.h"
+#include "gf2d_map.h"
+
 static struct Entity_Manager
 {
     Entity *all_ents;
@@ -91,7 +95,6 @@ void gf2d_entity_init(int count, char* config_filepath)
     for (i = 0; i < count; i++)
     {
         entityManager.all_ents[i].status = Inactive;
-
     }
 
     gf2d_preload_sprites("sprites/sprite.json");
@@ -101,8 +104,13 @@ void gf2d_entity_init(int count, char* config_filepath)
 void gf2d_draw_entity(Entity *ent)
 {
     GFC_Vector3D pos = ent->position;
-    if (gf2d_camera_is_target != ent)
-        gf2d_camera_offset(&pos);
+    GFC_Vector3D *offset = gf2d_camera_get_offset();
+    //slog("%s, (%f,%f,%f)", ent->name, gfc_vector3d_to_slog(pos));
+    pos.x -= offset->x;
+    pos.y -= offset->y;
+    //slog("%s, (%f,%f,%f)", ent->name, gfc_vector3d_to_slog(pos));
+    if (ent->dead)
+        return;
 
     //slog("ent : %f %f %f | offseted : %f %f %f", gfc_vector3d_to_slog(ent->position), gfc_vector3d_to_slog(pos));
     gf2d_sprite_draw( ent->sprite, 
@@ -113,7 +121,8 @@ void gf2d_draw_entity(Entity *ent)
         NULL,
         NULL,
         (int)ent->animation_frame );
-    }
+        //gf2d_draw_rect(ent->collide_rect, gfc_color(1,1,1,1));
+    };
 
 void gf2d_think_entity(Entity *ent)
 {
@@ -122,9 +131,45 @@ void gf2d_think_entity(Entity *ent)
 
 void gf2d_update_entity(Entity *ent)
 {
+    Entity *compEnt;
     ent->animation_frame += ent->animation_speed;
     ent->animation_frame = (ent->animation_frame >= ent->sprite->total_frames-1) ? 0 : ent->animation_frame;
     //slog("current frame of %s is %f at %f", ent->name, ent->animation_frame, ent->animation_speed);
+    if (ent->collides)
+    {
+        //slog("%s rect:", ent->name);
+        //gfc_rect_slog(ent->collide_rect);
+
+        if (!gfc_rect_overlap(ent->collide_rect,gf2d_map_bounds()))
+        {
+            ent->position = gfc_vector3d_subbed(ent->position, ent->next_movement);
+            gf2d_update_collisions_entity(ent, 0);
+            return;
+        }
+        for (int i = 0; i < entityManager.count; i++)
+        {
+            compEnt = &entityManager.all_ents[i];
+
+            if (compEnt == ent)
+                continue;
+
+            if (compEnt->status == Active && compEnt->collides)
+            {
+                if (gfc_rect_overlap(ent->collide_rect,compEnt->collide_rect))
+                {
+                    slog("movement repulsed");
+                    
+                    ent->position = gfc_vector3d_subbed(ent->position, ent->next_movement);
+                    gf2d_update_collisions_entity(ent, 0);
+                    return;
+                }
+                    
+            }
+        }
+    }
+
+    ent->position = gfc_vector3d_added(ent->position, ent->next_movement);
+    gf2d_update_collisions_entity(ent, 0);
 }
 
 Entity * gf2d_create_entity(char* name)
@@ -145,6 +190,11 @@ Entity * gf2d_create_entity(char* name)
             char *filepath = sj_get_string_value(sj_object_get_value(ent_info, "filepath"));
             ent->sprite = gf2d_sprite_load_image(filepath);
             int code = sj_get_float_value(sj_object_get_value(ent_info, "animation_speed"), &ent->animation_speed);
+
+            ent->update = &gf2d_update_entity;
+            ent->think = &gf2d_think_entity;
+            ent->draw = &gf2d_draw_entity;
+
             //slog("%f speed %i", ent->animation_speed, code);
             return ent;
         }
@@ -153,6 +203,38 @@ Entity * gf2d_create_entity(char* name)
     slog("No inactive ent found");
     return NULL;
 
+}
+
+void gf2d_update_collisions_entity(Entity *ent, Uint8 resize)
+{
+    ent->collide_rect.x = ent->position.x;
+    ent->collide_rect.y = ent->position.y;
+
+    GFC_Vector3D *offset = gf2d_camera_get_offset();
+    ent->collide_rect.x -= offset->x;
+    ent->collide_rect.y -= offset->y;
+    if (resize || 1)
+    {
+        ent->collide_rect.w = ent->sprite->frame_w;
+        ent->collide_rect.h = ent->sprite->frame_h;
+    }
+
+    if (gf2d_camera_is_target(ent))
+    {
+        if (resize || 1)
+        {
+            ent->collide_rect.w /= 3;
+            ent->collide_rect.h /= 3;
+        }
+        
+
+        ent->collide_rect.x += 42;
+        ent->collide_rect.y += 50;
+    }
+
+    ent->collides = 1;
+
+    return;
 }
 
 Entity *gf2d_find_entity(char* name)

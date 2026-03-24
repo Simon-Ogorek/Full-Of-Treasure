@@ -21,6 +21,8 @@ typedef struct Player_S
     int skillPoints
 }Player;
 
+Player *gf2d_player_get();
+
 Player *gf2d_spawn_player();
 
 void gf2d_player_think();

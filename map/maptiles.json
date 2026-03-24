@@ -17,11 +17,15 @@
                     "x":2,
                     "y":1
                 },
-
                 {
                     "name":"water",
                     "x":1,
                     "y":1
+                },
+                {
+                    "name":"red_rock",
+                    "x":0,
+                    "y":0
                 },
                 {
                     "name":"selection",
@@ -34,6 +38,6 @@
 
     "map_layout": {
         "count": 25000,
-        "path":"map/map1.bin"
+        "path":"map/flat.bin"
     }
 }
