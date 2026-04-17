@@ -4,7 +4,7 @@
 #include "gf2d_map.h"
 #include "gfc_hashmap.h"
 #include "gfc_types.h"
-
+#include "gfc_vector.h"
 #include <SDL_image.h>
 
 #include "gf2d_camera.h"
@@ -195,7 +195,7 @@ void gf2d_map_init(char *map_file, int editorMode)
     sj_get_integer_value(map_tilesets_JSON, &map_manager.tile_count);
 
     slog("tile count: %i", map_manager.tile_count);
-    map_manager.tile_count = 25000;
+    map_manager.tile_count = 25000 * 8;
 
     map_manager.map = (Tile*)malloc(sizeof(Tile) * map_manager.tile_count);
     
@@ -211,7 +211,7 @@ void gf2d_map_init(char *map_file, int editorMode)
 
     map_manager.bound_rect.x = 0;
     map_manager.bound_rect.y = 0;
-    map_manager.bound_rect.w = 70*32;
+    map_manager.bound_rect.w = 100*32;
     map_manager.bound_rect.h = 70*16;
     #pragma endregion
 }
@@ -262,7 +262,7 @@ void gf2d_map_draw()
         pos.x -= offsetedPos.x;
         pos.y -= offsetedPos.y;
 
-        
+        GFC_Vector4D clip = {0,0,1,1};
         //slog("drawing map tile at %f, %f", pos.x, pos.y);
         gf2d_sprite_render(
             gf2d_sprite_load_image("map/BasicTileset.png"), // TODO TO MAKE A INDEX
@@ -272,7 +272,7 @@ void gf2d_map_draw()
             NULL,
             NULL,
             NULL,
-            NULL,
+            &clip,
             tile_DEF->frame
         );
         //slog("Draw a tile at %i %i\n", tile_x,tile_y);

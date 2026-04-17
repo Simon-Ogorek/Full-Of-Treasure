@@ -1,0 +1,89 @@
+{
+    "bones": 
+    [
+        {
+            "name":"torso",
+            "id":0,
+            "filepath":"some_filepath",
+            "z-index":10,
+
+            "offset":{
+                "position":[0,0],
+                "rotation":[0,0],
+                "scale":[2,2]
+            },
+            
+            "bones":[ 1 ]
+        },
+        {
+            "name":"r_bicep",
+            "id":1,
+            "filepath":"some_filepath",
+            "z-index":9,
+            "offset":{
+                "position":[0.75,0],
+                "rotation":[0,0],
+                "scale":[1,1]
+            },
+            
+            "bones":[ 2 ]
+        },
+        {
+            "name":"r_forearm",
+            "id":2,
+            "filepath":"some_filepath",
+            "z-index":8,
+            "offset":{
+                "position":[1,0],
+                "rotation":[0,0],
+                "scale":[1,1]
+            },
+            
+            "bones":[ 3 ]
+        },
+        {
+            "name":"fist",
+            "id":3,
+            "filepath":"some_filepath",
+            "z-index":20,
+            "offset":{
+                "position":[1,0],
+                "rotation":[0,0],
+                "scale":[1,1]
+            }
+        }
+    ],
+
+    "animations":
+    {
+        "names":["punch"],
+        "0":
+        {
+            "punch":
+            [
+                {
+                    "frame":12,
+                    "rotation":[0,-20,0]
+                },
+                {
+                    "frame":24,
+                    "rotation":[0,0,0]
+                }
+            ]
+        },
+        "1":
+        {
+            "punch":
+            [
+                {
+                    "frame":12,
+                    "position":[0.5,0]
+                },
+                {
+                    "frame":24,
+                    "rotation":[1,0]
+                }
+            ]
+        }
+    }
+}

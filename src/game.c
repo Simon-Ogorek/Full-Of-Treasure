@@ -16,7 +16,6 @@ int main(int argc, char * argv[])
     
     float timer = 20;
     
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
     
     int done = 0;
     const Uint8 * keys;
@@ -32,12 +31,12 @@ int main(int argc, char * argv[])
     slog("---==== BEGIN ====---");
     gf2d_graphics_initialize(
         "gf2d",
-        400,
-        240,
+        1200,
+        700,
         400,
         240,
         gfc_vector4d(0,0,0,255),
-        1);
+        0);
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
     
@@ -135,8 +134,8 @@ int main(int argc, char * argv[])
             {
                 timer = 20;
                 Enemy * enemy = gf2d_create_enemy("cube");
-                enemy->ent->position.x = gfc_random_int(2000) + 500;
-                enemy->ent->position.y = gfc_random_int(2000) + 500;
+                enemy->ent->position.x = gfc_random_int(2000) + 1000;
+                enemy->ent->position.y = gfc_random_int(2000) + 1000;
             }
 
             

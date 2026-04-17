@@ -40,7 +40,7 @@ Enemy * gf2d_create_enemy(char *name)
             enemy->ent->status = Active;
 
             enemy->cooldown = -1;
-            enemy->awareness_range = 400;
+            enemy->awareness_range = 200;
             enemy->attack_range = 5;
 
             enemy->ent->position.x = 200;
@@ -116,6 +116,7 @@ void gf2d_think_enemy(Entity *ent)
     {
 
         case ES_Unaware:
+            break;
             if (gfc_random_int(600) == 1)
             {
                 GFC_Vector3D randomDir;

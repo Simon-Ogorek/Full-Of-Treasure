@@ -160,6 +160,7 @@ void gf2d_update_entity(Entity *ent)
                     slog("movement repulsed");
                     
                     ent->position = gfc_vector3d_subbed(ent->position, ent->next_movement);
+                    ent->position = gfc_vector3d_subbed(ent->position, ent->next_movement);
                     gf2d_update_collisions_entity(ent, 0);
                     return;
                 }

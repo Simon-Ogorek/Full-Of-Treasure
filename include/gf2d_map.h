@@ -17,6 +17,12 @@ typedef struct Map_Chunk_S
     GFC_Vector2D pos;
 }Map_Chunk;
 
+typedef struct Tile
+{
+    unsigned char tile_idx;
+    unsigned char flags;
+}Tile;
+
 void gf2d_map_init(char *map_file, int editorMode);
 
 void gf2d_map_draw();
