@@ -20,8 +20,8 @@ typedef struct Tile
 
 static struct Map_Manager
 {
-    GFC_List *chunks;
-    GFC_HashMap *tiles;
+    GFC_List *tile_defs;
+    GFC_List *file_sprites;
 
     Tile *map;
     int tile_count;
@@ -38,17 +38,21 @@ typedef struct Tile_Definition
     unsigned char frame;
 }Tile_Definition;
 
-
-
-Tile_Definition *fetch_tile(char* name)
+// Map Editor function
+Tile_Definition * gf2d_map_get_tile(Uint8 tile_idx)
 {
-    return (Tile_Definition *)gfc_hashmap_get(map_manager.tiles, name);
+    return ((Tile_Definition*)gfc_list_get_nth(map_manager.tile_defs, tile_idx));
+}
+
+// Map Editor function
+Sprite * gf2d_map_get_file_by_idx(Uint8 file_idx)
+{
+    return ((Sprite*)gfc_list_get_nth(map_manager.file_sprites, file_idx));
 }
 
 void gf2d_map_init(char *map_file, int editorMode)
 {
-    map_manager.chunks = gfc_list_new();
-    map_manager.tiles = gfc_hashmap_new();
+    map_manager.tile_defs = gfc_list_new();
 
     SJson *map_info_JSON = sj_load(map_file);
 
@@ -63,6 +67,8 @@ void gf2d_map_init(char *map_file, int editorMode)
     map_manager.tile_height = tile_height;
     map_manager.map_info_JSON = map_info_JSON;
 
+    int tile_index = 0; // 0 is null 
+    int file_index = 0; // 0 is fine here;
 
     for (int i = 0; i < sj_array_get_count(map_tilesets_JSON); i++)
     {
@@ -140,6 +146,7 @@ void gf2d_map_init(char *map_file, int editorMode)
         Tile_Definition *tile = (Tile_Definition *)malloc(sizeof(Tile_Definition) * sj_array_get_count(tiles_JSON));
         for (int j = 0; j < sj_array_get_count(tiles_JSON); j++)
         {
+            tile++;
             SJson *tile_info_JSON = sj_array_get_nth(tiles_JSON, j);
             if (!tile_info_JSON)
             {
@@ -147,7 +154,7 @@ void gf2d_map_init(char *map_file, int editorMode)
                 continue;
             }
         
-            tile->tileset_file_idx = 1; // TODO
+            tile->tileset_file_idx = file_index;
 
             int tile_x, tile_y;
             
@@ -168,10 +175,11 @@ void gf2d_map_init(char *map_file, int editorMode)
                 continue;
             }
 
-            gfc_hashmap_insert(map_manager.tiles, tile_name, tile);
+            gfc_list_set_nth(map_manager.tile_defs, tile_index, tile);
             tile++;
 
         }
+        file_index++;
 
 
     }
@@ -265,7 +273,7 @@ void gf2d_map_draw()
         GFC_Vector4D clip = {0,0,1,1};
         //slog("drawing map tile at %f, %f", pos.x, pos.y);
         gf2d_sprite_render(
-            gf2d_sprite_load_image("map/BasicTileset.png"), // TODO TO MAKE A INDEX
+            gf2d_map_get_file_by_idx(tile_DEF->tileset_file_idx),
             pos,
             NULL,
             NULL,
