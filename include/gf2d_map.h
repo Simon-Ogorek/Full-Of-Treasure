@@ -5,6 +5,13 @@
 #include "gfc_vector.h"
 #include "gfc_list.h"
 #include "gfc_shape.h"
+
+typedef struct Tile_Definition
+{
+    unsigned char tileset_file_idx;
+    unsigned char frame;
+}Tile_Definition;
+
 typedef struct Map_Tile_S
 {
     Sprite *sprite;
@@ -30,6 +37,11 @@ void map_update();
 void map_think();
 
 GFC_Rect gf2d_map_bounds();
+
+Tile_Definition * gf2d_map_get_tile(Uint32 tile_idx);   
+Sprite * gf2d_map_get_file_by_idx(Uint8 file_idx);
+char *gf2d_map_get_binary_path();
+
 
 
 #endif

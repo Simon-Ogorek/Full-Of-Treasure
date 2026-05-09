@@ -2,7 +2,7 @@
 #include "simple_logger.h"
 static Camera camera = {0};
 
-void gf2d_camera_init(GFC_Vector3D starting_position, int smoothing, float speed)
+Camera * gf2d_camera_init(GFC_Vector3D starting_position, int smoothing, float speed)
 {
     camera.position = starting_position;
 
@@ -11,6 +11,7 @@ void gf2d_camera_init(GFC_Vector3D starting_position, int smoothing, float speed
 
     camera.target = NULL;
     camera.target_position = starting_position;
+    return &camera;
 }
 
 void gf2d_camera_assign_position(GFC_Vector3D new_position)

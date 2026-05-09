@@ -56,8 +56,10 @@ int main(int argc, char * argv[])
     gf2d_map_init("map/maptiles.json", editor_mode);
 
     Player *player = gf2d_spawn_player();
-    gf2d_camera_init(gfc_vector3d(0,0,0), 1, 0.1);
+    Camera * cam = gf2d_camera_init(gfc_vector3d(0,0,0), 1, 0.1);
     gf2d_camera_assign_target(player->ent);
+    if (argc > 1)
+        gf2d_map_editor_init(cam);
 
     gf2d_ui_init(player);
 

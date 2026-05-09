@@ -19,7 +19,7 @@ typedef struct Camera_S
 }Camera;
 
 
-void gf2d_camera_init(GFC_Vector3D starting_position, int smoothing, float speed);
+Camera * gf2d_camera_init(GFC_Vector3D starting_position, int smoothing, float speed);
 void gf2d_camera_assign_position(GFC_Vector3D new_position);
 void gf2d_camera_assign_target(Entity *new_target);
 

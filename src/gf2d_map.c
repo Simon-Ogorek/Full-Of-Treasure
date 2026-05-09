@@ -11,17 +11,11 @@
 
 #define Tile_Delimeter (short)65535;
 
-typedef struct Tile
-{
-    unsigned char tile_idx;
-    unsigned char flags;
-}Tile;
-
 
 static struct Map_Manager
 {
-    GFC_List *tile_defs;
-    GFC_List *file_sprites;
+    Tile *tile_defs[128];
+    Sprite *file_sprites[16];
 
     Tile *map;
     int tile_count;
@@ -30,30 +24,30 @@ static struct Map_Manager
 
     SJson *map_info_JSON;
     int tile_width, tile_height;
+
+    char* map_binary_file_path;
 }map_manager;
 
-typedef struct Tile_Definition
-{
-    unsigned char tileset_file_idx;
-    unsigned char frame;
-}Tile_Definition;
 
-// Map Editor function
-Tile_Definition * gf2d_map_get_tile(Uint8 tile_idx)
+
+Tile_Definition * gf2d_map_get_tile(Uint32 tile_idx)
 {
-    return ((Tile_Definition*)gfc_list_get_nth(map_manager.tile_defs, tile_idx));
+    //slog("trying to access at %i of count %i", tile_idx + 1, gfc_list_get_count(map_manager.tile_defs));
+    return ((Tile_Definition*)map_manager.tile_defs[tile_idx]);
 }
 
-// Map Editor function
 Sprite * gf2d_map_get_file_by_idx(Uint8 file_idx)
 {
-    return ((Sprite*)gfc_list_get_nth(map_manager.file_sprites, file_idx));
+    return ((Sprite*)map_manager.file_sprites[file_idx]);
+}
+
+char *gf2d_map_get_binary_path()
+{
+    return map_manager.map_binary_file_path;
 }
 
 void gf2d_map_init(char *map_file, int editorMode)
 {
-    map_manager.tile_defs = gfc_list_new();
-
     SJson *map_info_JSON = sj_load(map_file);
 
     SJson *map_tilesets_JSON = sj_object_get_value(map_info_JSON, "tilesets");
@@ -67,12 +61,11 @@ void gf2d_map_init(char *map_file, int editorMode)
     map_manager.tile_height = tile_height;
     map_manager.map_info_JSON = map_info_JSON;
 
-    int tile_index = 0; // 0 is null 
+    int tile_index = 1; // 0 is null 
     int file_index = 0; // 0 is fine here;
 
     for (int i = 0; i < sj_array_get_count(map_tilesets_JSON); i++)
     {
-
         #pragma region Tileset
         SJson *tileset_JSON = sj_array_get_nth(map_tilesets_JSON, i);
 
@@ -122,6 +115,7 @@ void gf2d_map_init(char *map_file, int editorMode)
         slog("DEBUG ( iw : %i | ih : %i | sw : %i | sh : %i )", image_width, image_height, sheet_width, sheet_height);
 
         slog_sync();
+
         Sprite* tileset_sprite = gf2d_sprite_load_all(
             tileset_file,
             image_width / sheet_width,
@@ -130,6 +124,8 @@ void gf2d_map_init(char *map_file, int editorMode)
             NULL,
             0
         );
+
+        map_manager.file_sprites[file_index] = tileset_sprite;
 
         #pragma endregion
 
@@ -146,7 +142,6 @@ void gf2d_map_init(char *map_file, int editorMode)
         Tile_Definition *tile = (Tile_Definition *)malloc(sizeof(Tile_Definition) * sj_array_get_count(tiles_JSON));
         for (int j = 0; j < sj_array_get_count(tiles_JSON); j++)
         {
-            tile++;
             SJson *tile_info_JSON = sj_array_get_nth(tiles_JSON, j);
             if (!tile_info_JSON)
             {
@@ -162,7 +157,7 @@ void gf2d_map_init(char *map_file, int editorMode)
             sj_get_integer_value(tile_x_JSON, &tile_x);
 
             SJson *tile_y_JSON = sj_object_get_value(tile_info_JSON, "y");
-            sj_get_integer_value(tile_x_JSON, &tile_y);
+            sj_get_integer_value(tile_y_JSON, &tile_y);
 
             tile->frame = (sheet_width * tile_y) + tile_x;
 
@@ -174,9 +169,12 @@ void gf2d_map_init(char *map_file, int editorMode)
                 slog("Bad JSON in %s at entry %i for map", map_file, j);
                 continue;
             }
-
-            gfc_list_set_nth(map_manager.tile_defs, tile_index, tile);
+            
+            slog("Making a new tile at %i at %p", tile_index, tile);
+            //gfc_list_append(map_manager.tile_defs, tile_index);
+            map_manager.tile_defs[tile_index] = tile;
             tile++;
+            tile_index++;
 
         }
         file_index++;
@@ -251,7 +249,7 @@ void gf2d_map_draw()
             tile++;
             continue;
         }
-        Tile_Definition* tile_DEF = fetch_tile  ("grass");
+        Tile_Definition* tile_DEF = gf2d_map_get_tile(1);
         int tile_width = map_manager.tile_width;
         int tile_height = map_manager.tile_height;
 

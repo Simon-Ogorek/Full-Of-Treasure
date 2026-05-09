@@ -1,0 +1,32 @@
+{
+    "states":
+    [
+        {
+            "name": "day",
+            "compatable":["rain"],
+            "next":["night"],
+            "duration":5,
+            "cooldown":5
+        },
+        {
+            "name": "night",
+            "compatable":["rain"],
+            "filter":[64,64,64,128],
+            "next":["day"],
+            "duration":5,
+            "cooldown":5
+        }
+    ],
+    "events":
+    [
+        {
+            "name": "rain",
+            "video":"weather/rain.mp4",
+            "duration":4,
+            "variance":3,
+            "cooldown":10
+        }
+    ],
+    "start":"day",
+    "overlapping_states":"rain" 
+}
