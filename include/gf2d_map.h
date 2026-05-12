@@ -42,6 +42,8 @@ Tile_Definition * gf2d_map_get_tile(Uint32 tile_idx);
 Sprite * gf2d_map_get_file_by_idx(Uint8 file_idx);
 char *gf2d_map_get_binary_path();
 
+void gf2d_map_teleport_next();
+
 
 
 #endif

@@ -129,6 +129,16 @@ void gf2d_think_entity(Entity *ent)
     return;
 }
 
+void gf2d_entity_invoke_on_collision(Entity *invoker, Entity *invoked)
+{
+    if (!strcmp(invoker->name, "player"))
+    {
+        if (!strcmp(invoked->name, "teleporter"))
+        {
+            gf2d_map_teleport_next();
+        }
+    }
+}
 void gf2d_update_entity(Entity *ent)
 {
     Entity *compEnt;
@@ -157,7 +167,8 @@ void gf2d_update_entity(Entity *ent)
             {
                 if (gfc_rect_overlap(ent->collide_rect,compEnt->collide_rect))
                 {
-                    slog("movement repulsed");
+                    //slog("movement repulsed");
+                    gf2d_entity_invoke_on_collision(ent, compEnt);
                     
                     ent->position = gfc_vector3d_subbed(ent->position, ent->next_movement);
                     ent->position = gfc_vector3d_subbed(ent->position, ent->next_movement);

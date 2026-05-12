@@ -76,8 +76,8 @@ void gf2d_think_enemy(Entity *ent)
         return;
     }
 
-    slog("enemy state is %i", enemy->state);
-    slog("distance is %f, awareness: %f, range: %f", gfc_vector3d_magnitude_between(ent->position, enemyManager.player->ent->position) ,enemy->awareness_range, enemy->attack_range);
+    //slog("enemy state is %i", enemy->state);
+    //slog("distance is %f, awareness: %f, range: %f", gfc_vector3d_magnitude_between(ent->position, enemyManager.player->ent->position) ,enemy->awareness_range, enemy->attack_range);
 
     ent->status = Active;
 
@@ -141,7 +141,7 @@ void gf2d_think_enemy(Entity *ent)
             gfc_vector3d_normalize(&direction);
             gfc_vector3d_scale(direction, direction, enemy->ent->speed);
 
-            slog("moving enemy by (%f,%f,%f)", gfc_vector3d_to_slog(direction) );
+            //slog("moving enemy by (%f,%f,%f)", gfc_vector3d_to_slog(direction) );
 
             gfc_vector3d_add(enemy->ent->position, enemy->ent->position, direction);
             break;
@@ -151,7 +151,7 @@ void gf2d_think_enemy(Entity *ent)
             break;
     }
 
-    slog("enemy pos : (%f,%f,%f)", gfc_vector3d_to_slog(enemy->ent->position));
+    //slog("enemy pos : (%f,%f,%f)", gfc_vector3d_to_slog(enemy->ent->position));
 }
 
 void gf2d_update_enemy(Entity *ent)

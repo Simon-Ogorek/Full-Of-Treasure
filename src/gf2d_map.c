@@ -26,6 +26,9 @@ static struct Map_Manager
     int tile_width, tile_height;
 
     char* map_binary_file_path;
+
+    int level;
+    int max_level;
 }map_manager;
 
 
@@ -48,6 +51,9 @@ char *gf2d_map_get_binary_path()
 
 void gf2d_map_init(char *map_file, int editorMode)
 {
+
+    map_manager.level = 1;
+    map_manager.max_level = 2;
     SJson *map_info_JSON = sj_load(map_file);
 
     SJson *map_tilesets_JSON = sj_object_get_value(map_info_JSON, "tilesets");
@@ -298,5 +304,16 @@ void gf2d_map_draw()
 void map_update();
 void map_think();
 
+void gf2d_map_teleport_next()
+{
+    if (map_manager.level < map_manager.max_level)
+    {
+        map_manager.level++;
+    }
+    else
+    {
+        slog("Trying to go to next level when already at the end");
+    }
+}
 
 
