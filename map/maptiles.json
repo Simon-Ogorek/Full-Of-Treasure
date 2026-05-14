@@ -19,8 +19,8 @@
                 },
                 {
                     "name":"water",
-                    "x":1,
-                    "y":1
+                    "x":10,
+                    "y":10
                 },
                 {
                     "name":"red_rock",
@@ -38,6 +38,14 @@
 
     "map_layout": {
         "count": 25000,
-        "path":"map/flat.bin"
-    }
+        "path":"map/",
+        "levels":2
+    },
+
+    "spawnables":
+    [
+        [
+            ["teleporter",200,200]
+        ]
+    ]
 }

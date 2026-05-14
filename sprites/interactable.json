@@ -13,5 +13,10 @@
         "name":"vending",
         "sprite":"vending",
         "function":"vending_interact"
+    },
+    {
+        "name":"teleporter",
+        "sprite":"teleporter",
+        "function":"teleport_interact"
     }
 ]

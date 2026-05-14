@@ -3,13 +3,15 @@
 
 int main()
 {
-    FILE *file = fopen("map1.bin", "wb");
+    FILE *file = fopen("map0.bin", "wb");
     if (file == NULL) {
         perror("Error opening file");
         return -1;
     }
     unsigned short blank = 65533;
-    unsigned short data = 1;
+    unsigned short rock = 3;
+    unsigned short water = 2;
+
     unsigned short yDelim = 65535;
     unsigned short zDelim = 65534;
     unsigned short end = 0;
@@ -19,7 +21,10 @@ int main()
     {
         for (int j = 0; j < 150; j++)
         {
-            fwrite(&data, sizeof(unsigned short),1, file);
+            if (i > 100 && j - (i/5) < 50)
+                fwrite(&water, sizeof(unsigned short),1, file);
+            else
+                fwrite(&rock, sizeof(unsigned short),1, file);
         }
         fwrite(&yDelim, sizeof(unsigned short),1, file);
     }
@@ -29,7 +34,7 @@ int main()
        O  O
        O  O
        OOOO
-    */
+    */  
     fwrite(&zDelim, sizeof(unsigned short), 1, file);
     // Z = 1;
 
@@ -38,7 +43,7 @@ int main()
     */
     for (int j = 0; j < 150; j++)
     {
-        fwrite(&data, sizeof(unsigned short),1, file);
+        fwrite(&rock, sizeof(unsigned short),1, file);
     }
     fwrite(&yDelim, sizeof(unsigned short),1, file);
 
@@ -48,12 +53,12 @@ int main()
     */
     for (int i = 0; i < 148; i++)
     {
-        fwrite(&data, sizeof(unsigned short),1, file);
+        fwrite(&rock, sizeof(unsigned short),1, file);
         for (int j = 0; j < 148; j++)
         {
             fwrite(&blank, sizeof(unsigned short),1, file);
         }
-        fwrite(&data, sizeof(unsigned short),1, file);
+        fwrite(&rock, sizeof(unsigned short),1, file);
         fwrite(&yDelim, sizeof(unsigned short),1, file);
     }
     /* 
@@ -61,7 +66,7 @@ int main()
     */
     for (int j = 0; j < 150; j++)
     {
-        fwrite(&data, sizeof(unsigned short),1, file);
+        fwrite(&rock, sizeof(unsigned short),1, file);
     }
 
     fwrite(&yDelim, sizeof(unsigned short),1, file);

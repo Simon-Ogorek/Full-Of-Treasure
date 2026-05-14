@@ -1,6 +1,8 @@
 #include "gf2d_enemy.h"
 #include "gf2d_player.h"
 #include "simple_logger.h"
+
+#include "gf2d_sound.h"
 static struct Enemy_Manager
 {
     Enemy *all_enemies;
@@ -18,6 +20,11 @@ void gf2d_enemy_init(int count)
     memset(enemyManager.all_enemies,0,sizeof(Enemy)*count);
 
     enemyManager.count = count;
+}
+
+void gf2d_enemy_reinit()
+{
+    enemyManager.player = gf2d_player_get();
 }
 
 Enemy * gf2d_create_enemy(char *name)
@@ -64,6 +71,8 @@ void perform_attack(Enemy *enemy)
 {
     enemy->cooldown = 12;
     enemyManager.player->ent->health--;
+    gf2d_sound_play_hurt();
+
     return;
 }
 
@@ -78,12 +87,13 @@ void gf2d_think_enemy(Entity *ent)
 
     //slog("enemy state is %i", enemy->state);
     //slog("distance is %f, awareness: %f, range: %f", gfc_vector3d_magnitude_between(ent->position, enemyManager.player->ent->position) ,enemy->awareness_range, enemy->attack_range);
-
+    ent->center.x = ent->position.x + ent->sprite->frame_w / 2;
+    ent->center.y = ent->position.y + ent->sprite->frame_h / 2;
     ent->status = Active;
-
+    // slog("Enemy Center %f,%f,%f | Player : %f,%f,%f | Dist: %f",gfc_vector3d_to_slog(ent->center), gfc_vector3d_to_slog(enemyManager.player->ent->center),  gfc_vector3d_magnitude_between(ent->center, enemyManager.player->ent->center));
     if (enemy->state == ES_Unaware)
     {
-        if (gfc_vector3d_magnitude_between(ent->position, enemyManager.player->ent->position) < enemy->awareness_range)
+        if (gfc_vector3d_magnitude_between(ent->center, enemyManager.player->ent->center) < enemy->awareness_range)
         {
             enemy->state = ES_Chase;
         }
@@ -91,11 +101,11 @@ void gf2d_think_enemy(Entity *ent)
 
     if (enemy->state == ES_Chase)
     {
-        if (gfc_vector3d_magnitude_between(ent->position, enemyManager.player->ent->position) > enemy->awareness_range)
+        if (gfc_vector3d_magnitude_between(ent->center, enemyManager.player->ent->center) > enemy->awareness_range)
         {
             enemy->state = ES_Unaware;
         }
-        if (gfc_vector3d_magnitude_between(ent->position, enemyManager.player->ent->position) <= enemy->attack_range)
+        if (gfc_vector3d_magnitude_between(ent->center, enemyManager.player->ent->center) <= enemy->attack_range)
         {
             enemy->state = ES_Attack;
             
@@ -116,7 +126,6 @@ void gf2d_think_enemy(Entity *ent)
     {
 
         case ES_Unaware:
-            break;
             if (gfc_random_int(600) == 1)
             {
                 GFC_Vector3D randomDir;
@@ -137,7 +146,7 @@ void gf2d_think_enemy(Entity *ent)
             break;
 
         case ES_Chase:
-            GFC_Vector3D direction = gfc_vector3d_subbed(enemyManager.player->ent->position, enemy->ent->position);
+            GFC_Vector3D direction = gfc_vector3d_subbed(enemyManager.player->ent->center, enemy->ent->center);
             gfc_vector3d_normalize(&direction);
             gfc_vector3d_scale(direction, direction, enemy->ent->speed);
 
@@ -163,4 +172,36 @@ void gf2d_update_enemy(Entity *ent)
 void gf2d_delete_enemy(Enemy *enemy)
 {
 
+}
+
+Enemy *gf2d_find_nearest_enemy(GFC_Vector3D pos)
+{
+    Enemy *enemy;
+    Enemy *closest_enemy = NULL;
+    float lowestDist = 999999;
+    int i;
+
+    for (i = 0; i < enemyManager.count; i++)
+    {
+        enemy = &enemyManager.all_enemies[i];
+        if (enemy->state == ES_Inactive)
+            continue;
+        float dist = gfc_vector3d_magnitude_between_squared(enemy->ent->center, pos);
+        if (dist < lowestDist || !closest_enemy)
+        {
+            closest_enemy = enemy;
+            lowestDist = dist;
+        }
+    }
+
+    return closest_enemy;
+}
+
+void gf2d_hurt_enemy(Enemy *target, int damage)
+{
+    target->ent->health-= damage;
+    if (target->ent->health <= 0)
+    {
+        target->ent->status = Inactive;
+    }
 }

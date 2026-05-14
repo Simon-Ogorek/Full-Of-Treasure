@@ -32,6 +32,7 @@ typedef struct Enemy_S
 }Enemy;
 
 void gf2d_enemy_init(int count);
+void gf2d_enemy_reinit();
 
 Enemy * gf2d_create_enemy(char *name);
 
@@ -39,5 +40,6 @@ void gf2d_think_enemy(Entity *ent);
 void gf2d_update_enemy(Entity *ent);
 
 void gf2d_delete_enemy(Enemy *enemy);
-
+Enemy *gf2d_find_nearest_enemy(GFC_Vector3D pos);
+void gf2d_hurt_enemy(Enemy *target, int damage);
 #endif

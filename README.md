@@ -39,41 +39,32 @@ Personable
 
 6. Isometric Game World ✅
 
-7. 5 Different Enemies 1/5
+7. 5 Different Enemies 2/5
 
-8. 5 Different World Interactable World Elements
+8. 5 Different World Interactable World Elements 1/5
 
-9. 5 Basic Faculties ( Move , Block, Run ) 4/5
+9. 5 Basic Faculties ( Move, Run, Sword, Distance Attack ) 5/5
 
 10. Skill Tree ✅
 
 __Final Deliverables__
 
-Level Transitions 
+11. Level Transitions ✅
 
-    game must clean up level state and load a new one with player continuity
+12. Contained Game Experience this includes a 'main' menu landing page. ✅
 
-Contained Game Experience this includes a 'main' menu landing page.  
+13. Audio - Background Music AND sound effects ✅
 
-    Do not die directly to the desktop.  
-    cleanup any debug output
+14. File Operations - Your project should be data driven, and not hard coded. ✅
 
-Audio - Background Music AND sound effects
+15. Research - 3DS Build
 
-    look for free sounds that you can legally use for your project.  Although anything is fair use for class projects, if you make it available outside of the classroom (ie: on a public github) you will need to be careful about this.
+16. Content Editor - Level Editor
 
-File Operations - Your project should be data driven, and not hard coded.
+17. Dialogue Tree
 
-    All content should be coming from definition files (json or other config file format). This is necessary to get your content editor working
+18. Shop Keepers & Economy
 
-Research - 3DS Build
+19. 5 different type of Quests (Kill thing, fetch quest, etc)
 
-Content Editor - Level Editor
-
-Dialogue Tree
-
-Shop Keepers & Economy
-
-5 different type of Quests (Kill thing, fetch quest, etc)
-
-Weather Effects ✅
+20. Weather Effects ✅

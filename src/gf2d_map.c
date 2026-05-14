@@ -6,6 +6,7 @@
 #include "gfc_types.h"
 #include "gfc_vector.h"
 #include <SDL_image.h>
+#include "gf2d_weather.h"
 
 #include "gf2d_camera.h"
 
@@ -14,10 +15,10 @@
 
 static struct Map_Manager
 {
-    Tile *tile_defs[128];
+    Tile *tile_defs[256];
     Sprite *file_sprites[16];
 
-    Tile *map;
+    Uint16 *map;
     int tile_count;
 
     GFC_Rect bound_rect;
@@ -25,10 +26,13 @@ static struct Map_Manager
     SJson *map_info_JSON;
     int tile_width, tile_height;
 
-    char* map_binary_file_path;
+    char map_binary_file_path[64];
 
     int level;
     int max_level;
+
+    Uint8 collision_map[200][200];
+    char stale_map;
 }map_manager;
 
 
@@ -52,8 +56,8 @@ char *gf2d_map_get_binary_path()
 void gf2d_map_init(char *map_file, int editorMode)
 {
 
-    map_manager.level = 1;
-    map_manager.max_level = 2;
+    map_manager.level = 0;
+    map_manager.max_level = 9;
     SJson *map_info_JSON = sj_load(map_file);
 
     SJson *map_tilesets_JSON = sj_object_get_value(map_info_JSON, "tilesets");
@@ -66,6 +70,8 @@ void gf2d_map_init(char *map_file, int editorMode)
     map_manager.tile_width = tile_width;
     map_manager.tile_height = tile_height;
     map_manager.map_info_JSON = map_info_JSON;
+
+    map_manager.stale_map = 1;
 
     int tile_index = 1; // 0 is null 
     int file_index = 0; // 0 is fine here;
@@ -209,22 +215,27 @@ void gf2d_map_init(char *map_file, int editorMode)
     slog("tile count: %i", map_manager.tile_count);
     map_manager.tile_count = 25000 * 8;
 
-    map_manager.map = (Tile*)malloc(sizeof(Tile) * map_manager.tile_count);
+    map_manager.map = (Uint16*)calloc(sizeof(Uint16),map_manager.tile_count);
     
     char * filepath = sj_get_string_value(sj_object_get_value(map_layout_JSON,"path"));
+    strcpy(map_manager.map_binary_file_path, filepath);
+    sj_get_integer_value(sj_object_get_value(map_layout_JSON, "levels"),&map_manager.max_level);
 
-    FILE *file = fopen(filepath, "rb");
+    char path[64];
+    snprintf(path, 64, "%s%s%i%s", map_manager.map_binary_file_path, "map", map_manager.level, ".bin");
+    slog("Opening map at path %s", path);
+    FILE *file = fopen(path, "rb");
     if (file == NULL) {
         perror("Error opening binary file");
         return -1;
     }
 
-    fread(map_manager.map, sizeof(Tile), map_manager.tile_count, file);
+    fread(map_manager.map, sizeof(Uint16), map_manager.tile_count, file);
 
-    map_manager.bound_rect.x = 0;
-    map_manager.bound_rect.y = 0;
-    map_manager.bound_rect.w = 100*32;
-    map_manager.bound_rect.h = 70*16;
+    map_manager.bound_rect.x = -1000;
+    map_manager.bound_rect.y = -1000;
+    map_manager.bound_rect.w = 10000*32;
+    map_manager.bound_rect.h = 7000*16;
     #pragma endregion
 }
 
@@ -235,44 +246,85 @@ GFC_Rect gf2d_map_bounds()
     return map_manager.bound_rect;
 }
 
+char gf2d_map_is_colliding(GFC_Vector3D pos)
+{
+    int width = map_manager.tile_width;
+    int height = map_manager.tile_height;
+
+    int converted_x = (int)(pos.x / width + pos.y / height);
+    int converted_y = (int)(-pos.x / width + pos.y / height);
+
+    return map_manager.collision_map[converted_x][converted_y];
+}
+
 void gf2d_map_draw()
 {
     #pragma region Map_Spawning
 
     //printf("===========================================\n");
-    Tile *tile = map_manager.map;
+    Uint16 *tile = (Uint16 *)map_manager.map;
     int tile_x = 0;
     int tile_y = 0;
     int tile_z = 0;
+
+    if (map_manager.stale_map)
+    {
+        memset(map_manager.collision_map, 0, sizeof(map_manager.collision_map));
+    }
     //printf("Started");
-    while (*(Uint16 *)tile != 0)
+    while (*tile != 0)
     {
         //printf("Tile: %hu\n", *tile);
-        if (*(Uint16 *)tile == 65535)
+        if (*tile == 65535)
         {
             tile_y++;
             tile_x=0;
             tile++;
             continue;
         }
-        Tile_Definition* tile_DEF = gf2d_map_get_tile(1);
+
+        if (*tile == 65534)
+        {
+            tile_z++;
+            tile_x = 0;
+            tile_y = 0;
+            tile++;
+            continue;
+        }
+
+        if (*tile == 65533)
+        {
+            tile_x++;
+            tile++;
+            continue;
+        }
+
+        if (*tile > 65390)
+        {
+            return;
+        }
+        Tile_Definition* tile_DEF = gf2d_map_get_tile(*tile);
         int tile_width = map_manager.tile_width;
         int tile_height = map_manager.tile_height;
 
         GFC_Vector3D offsetedPos = {0};
         gf2d_camera_offset(&offsetedPos);
 
-        float scaleTileToCordsX = (tile_width/2 * (tile_y % 2 == 0));
-        float scaleTileToCordsY = tile_height/2 + (tile_height/2 * tile_z);
+        if (map_manager.stale_map && (tile_z > 0 || *tile == 2))
+        {
+            map_manager.collision_map[tile_x][tile_y] = 1;
+        }
 
-        GFC_Vector2D pos = gfc_vector2d(
-            tile_width * tile_x + scaleTileToCordsX,
-            tile_y * scaleTileToCordsY);
+        float scaleTileToCordsX = (tile_x - tile_y) * (tile_width  / 2.0f);
+        float scaleTileToCordsY = (tile_x + tile_y) * (tile_height / 2.0f);
+
+        GFC_Vector2D pos = gfc_vector2d(scaleTileToCordsX, scaleTileToCordsY);
 
         //slog("Original Position: %f %f | offset : %f %f %f", gfc_vector3d_to_slog(offsetedPos));
         
         pos.x -= offsetedPos.x;
         pos.y -= offsetedPos.y;
+        pos.y -= tile_z * tile_height;
 
         GFC_Vector4D clip = {0,0,1,1};
         //slog("drawing map tile at %f, %f", pos.x, pos.y);
@@ -292,12 +344,9 @@ void gf2d_map_draw()
         tile_x++;
     }
 
-    map_manager.bound_rect.x = 32;
-    map_manager.bound_rect.y = 16;
+    map_manager.stale_map = 0;
 
-    GFC_Vector3D *offset = gf2d_camera_get_offset();
-    map_manager.bound_rect.x -= offset->x;
-    map_manager.bound_rect.y -= offset->y;
+
     
     #pragma endregion
 }   
@@ -309,11 +358,46 @@ void gf2d_map_teleport_next()
     if (map_manager.level < map_manager.max_level)
     {
         map_manager.level++;
+        map_manager.stale_map = 1;
+        gf2d_entity_cleanup(1);
+        char path[64];
+        snprintf(path, 64, "%s%s%i%s", map_manager.map_binary_file_path, "map", map_manager.level, ".bin");
+        slog("Opening map at path %s", path);
+        FILE *file = fopen(path, "rb");
+        if (file == NULL) {
+            perror("Error opening binary file");
+            return -1;
+        }
+
+        fread(map_manager.map, sizeof(Uint16), map_manager.tile_count, file);
+
+        gf2d_weather_effect_night_end();
+        gf2d_weather_effect_rain_end();
     }
     else
     {
         slog("Trying to go to next level when already at the end");
     }
+    
+}
+
+void gf2d_map_reset()
+{
+    map_manager.level = 0;
+    map_manager.stale_map = 1;
+    char path[64];
+    snprintf(path, 64, "%s%s%i%s", map_manager.map_binary_file_path, "map", map_manager.level, ".bin");
+    slog("Opening map at path %s", path);
+    FILE *file = fopen(path, "rb");
+    if (file == NULL) {
+        perror("Error opening binary file");
+        return -1;
+    }
+
+    gf2d_weather_effect_night_start();
+    gf2d_weather_effect_rain_start();
+
+    fread(map_manager.map, sizeof(Uint16), map_manager.tile_count, file);
 }
 
 

@@ -136,12 +136,15 @@ void gf2d_entity_invoke_on_collision(Entity *invoker, Entity *invoked)
         if (!strcmp(invoked->name, "teleporter"))
         {
             gf2d_map_teleport_next();
+            invoked->status = Inactive;
         }
     }
 }
 void gf2d_update_entity(Entity *ent)
 {
     Entity *compEnt;
+    ent->center.x = ent->position.x + ent->sprite->frame_w / 2;
+    ent->center.y = ent->position.y + ent->sprite->frame_h / 2;
     ent->animation_frame += ent->animation_speed;
     ent->animation_frame = (ent->animation_frame >= ent->sprite->total_frames-1) ? 0 : ent->animation_frame;
     //slog("current frame of %s is %f at %f", ent->name, ent->animation_frame, ent->animation_speed);
@@ -150,7 +153,7 @@ void gf2d_update_entity(Entity *ent)
         //slog("%s rect:", ent->name);
         //gfc_rect_slog(ent->collide_rect);
 
-        if (!gfc_rect_overlap(ent->collide_rect,gf2d_map_bounds()))
+        if (gf2d_map_is_colliding(ent->center))
         {
             ent->position = gfc_vector3d_subbed(ent->position, ent->next_movement);
             gf2d_update_collisions_entity(ent, 0);
@@ -170,7 +173,6 @@ void gf2d_update_entity(Entity *ent)
                     //slog("movement repulsed");
                     gf2d_entity_invoke_on_collision(ent, compEnt);
                     
-                    ent->position = gfc_vector3d_subbed(ent->position, ent->next_movement);
                     ent->position = gfc_vector3d_subbed(ent->position, ent->next_movement);
                     gf2d_update_collisions_entity(ent, 0);
                     return;
@@ -367,4 +369,26 @@ void gf2d_entity_set_pause(Uint8 TorF)
 Uint8 gf2d_entity_get_pause()
 {
     return entityManager.paused;
+}
+
+void gf2d_entity_cleanup(char maintainPlayer)
+{
+    Entity *ent;
+    int i;
+    
+    for (i = 0; i < entityManager.count; i++)
+    {
+        ent = &entityManager.all_ents[i];
+        if (!ent)
+            continue;
+        if (maintainPlayer)
+        {
+            if (ent->name && !strcmp(ent->name, "player"))
+                continue;
+        }
+        if (ent->status == Active)
+        {
+            ent->status = Inactive;
+        }
+    }
 }

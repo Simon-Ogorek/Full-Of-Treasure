@@ -1,13 +1,14 @@
 #include "gf2d_player.h"
 #include "simple_logger.h"
 #include "gf2d_camera.h"
-
+#include "gf2d_sound.h"
+#include "gf2d_enemy.h"
 Player *the_player;
 Uint8 attack_pressed;
 Player *gf2d_spawn_player()
 {
     if (the_player)
-        return;
+        free(the_player);
     Player *player = (Player *)malloc(sizeof(Player));
 
     player->ent = gf2d_create_entity("player");
@@ -86,9 +87,25 @@ void gf2d_player_think(Entity *ent)
         else
         {
             player->ent->health--;
+            gf2d_sound_play_hurt();
         }
     }
-    attack_pressed = keys[SDL_SCANCODE_E];
+
+    if (keys[SDL_SCANCODE_T] && !attack_pressed)
+    {
+        attack_pressed = 1;
+        Enemy *target = NULL;
+        target = gf2d_find_nearest_enemy(ent->position);
+        if (target)
+        {
+            gf2d_sound_play_hurt();
+            gf2d_hurt_enemy(target, 1);
+        }
+        
+        
+    }
+
+    attack_pressed = keys[SDL_SCANCODE_E] || keys[SDL_SCANCODE_T];
 }
 
 Uint8 gf2d_player_buy_melee(Player* player)

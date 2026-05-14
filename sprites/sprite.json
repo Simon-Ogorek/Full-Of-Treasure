@@ -49,10 +49,19 @@
             "name": "goblin",
             "filepath" : "sprites/goblin.png",
 
-            "sheet_width" : 1,
+            "sheet_width" : 2,
             "sheet_height" : 1,
 
-            "animation_speed" : 0
+            "animation_speed" : 0.3
+        },
+        {
+            "name": "zombie",
+            "filepath" : "sprites/zombie.png",
+
+            "sheet_width" : 6,
+            "sheet_height" : 4,
+
+            "animation_speed" : 0.3
         },
         {
             "name": "waystone",
@@ -64,13 +73,13 @@
             "animation_speed" : 0
         },
         {
-            "name":"goblin",
-            "filepath" : "sprites/goblin.png",
+            "name":"teleporter",
+            "filepath" : "sprites/teleporter.png",
 
             "sheet_width" : 1,
-            "sheet_height" : 2,
+            "sheet_height" : 1,
 
-            "animation_speed" : 0.3
+            "animation_speed" : 0
         }
 
     ],

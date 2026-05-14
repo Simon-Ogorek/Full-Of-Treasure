@@ -43,7 +43,8 @@ Sprite * gf2d_map_get_file_by_idx(Uint8 file_idx);
 char *gf2d_map_get_binary_path();
 
 void gf2d_map_teleport_next();
+char gf2d_map_is_colliding(GFC_Vector3D pos);
 
-
+void gf2d_map_reset();
 
 #endif

@@ -21,6 +21,7 @@ typedef struct Entity_S
 {
     Sprite *sprite;
     GFC_Vector3D position;
+    GFC_Vector3D center;
     GFC_Vector3D next_movement;
 
     Uint8 collides;
@@ -53,6 +54,7 @@ typedef struct Entity_S
 }Entity;
 
 void gf2d_entity_init(int count, char* config_filepath);
+void gf2d_entity_cleanup(char maintainPlayer);
 
 Entity * gf2d_create_entity(char *name);
 
